@@ -2,31 +2,31 @@ package uc.mei.is;
 
 import jakarta.xml.bind.annotation.*;
 
-@XmlRootElement
+@XmlRootElement(name = "aluno")
 // order of the fields in XML
 // @XmlType(propOrder = {"price", "name"})
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Aluno {
-    @XmlValue
-    int age;
-    @XmlElement(name = "n")
+    @XmlAttribute(name = "id")
+    long id;
+    @XmlElement(name = "name")
     String nome;
+    @XmlElement(name = "age")
+    int age;
+
     public Aluno(){}
-    public Aluno(int age, String nome) {
+    public Aluno(int age, String nome, long id) {
         this.age = age;
         this.nome = nome;
+        this.id = id;
     }
 
-    public int getAge() {
-        return age;
+    public void setId(long id) {
+        this.id = id;
     }
 
-    public void setAge(int age) {
+    public void setAge(int numero){
         this.age = age;
-    }
-
-    public String getNome() {
-        return nome;
     }
 
     public void setNome(String nome) {
