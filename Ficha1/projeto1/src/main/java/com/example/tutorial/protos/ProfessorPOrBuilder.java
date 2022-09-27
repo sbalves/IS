@@ -79,4 +79,28 @@ public interface ProfessorPOrBuilder extends
    * @return The phoneNumber.
    */
   long getPhoneNumber();
+
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  java.util.List<com.example.tutorial.protos.StudentP> 
+      getStudentsList();
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  com.example.tutorial.protos.StudentP getStudents(int index);
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  int getStudentsCount();
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  java.util.List<? extends com.example.tutorial.protos.StudentPOrBuilder> 
+      getStudentsOrBuilderList();
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  com.example.tutorial.protos.StudentPOrBuilder getStudentsOrBuilder(
+      int index);
 }

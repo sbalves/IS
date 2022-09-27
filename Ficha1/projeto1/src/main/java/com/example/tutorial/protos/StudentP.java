@@ -117,13 +117,13 @@ private static final long serialVersionUID = 0L;
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_StudentP_descriptor;
+    return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_StudentP_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_StudentP_fieldAccessorTable
+    return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_StudentP_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             com.example.tutorial.protos.StudentP.class, com.example.tutorial.protos.StudentP.Builder.class);
   }
@@ -669,13 +669,13 @@ private static final long serialVersionUID = 0L;
       com.example.tutorial.protos.StudentPOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_StudentP_descriptor;
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_StudentP_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_StudentP_fieldAccessorTable
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_StudentP_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               com.example.tutorial.protos.StudentP.class, com.example.tutorial.protos.StudentP.Builder.class);
     }
@@ -718,7 +718,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_StudentP_descriptor;
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_StudentP_descriptor;
     }
 
     @java.lang.Override

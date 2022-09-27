@@ -19,6 +19,7 @@ private static final long serialVersionUID = 0L;
     name_ = "";
     birthDate_ = "";
     address_ = "";
+    students_ = java.util.Collections.emptyList();
   }
 
   @java.lang.Override
@@ -80,6 +81,15 @@ private static final long serialVersionUID = 0L;
             phoneNumber_ = input.readInt64();
             break;
           }
+          case 50: {
+            if (!((mutable_bitField0_ & 0x00000020) != 0)) {
+              students_ = new java.util.ArrayList<com.example.tutorial.protos.StudentP>();
+              mutable_bitField0_ |= 0x00000020;
+            }
+            students_.add(
+                input.readMessage(com.example.tutorial.protos.StudentP.PARSER, extensionRegistry));
+            break;
+          }
           default: {
             if (!parseUnknownField(
                 input, unknownFields, extensionRegistry, tag)) {
@@ -97,19 +107,22 @@ private static final long serialVersionUID = 0L;
       throw new com.google.protobuf.InvalidProtocolBufferException(
           e).setUnfinishedMessage(this);
     } finally {
+      if (((mutable_bitField0_ & 0x00000020) != 0)) {
+        students_ = java.util.Collections.unmodifiableList(students_);
+      }
       this.unknownFields = unknownFields.build();
       makeExtensionsImmutable();
     }
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_ProfessorP_descriptor;
+    return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_ProfessorP_descriptor;
   }
 
   @java.lang.Override
   protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_ProfessorP_fieldAccessorTable
+    return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_ProfessorP_fieldAccessorTable
         .ensureFieldAccessorsInitialized(
             com.example.tutorial.protos.ProfessorP.class, com.example.tutorial.protos.ProfessorP.Builder.class);
   }
@@ -297,6 +310,46 @@ private static final long serialVersionUID = 0L;
     return phoneNumber_;
   }
 
+  public static final int STUDENTS_FIELD_NUMBER = 6;
+  private java.util.List<com.example.tutorial.protos.StudentP> students_;
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  @java.lang.Override
+  public java.util.List<com.example.tutorial.protos.StudentP> getStudentsList() {
+    return students_;
+  }
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  @java.lang.Override
+  public java.util.List<? extends com.example.tutorial.protos.StudentPOrBuilder> 
+      getStudentsOrBuilderList() {
+    return students_;
+  }
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  @java.lang.Override
+  public int getStudentsCount() {
+    return students_.size();
+  }
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  @java.lang.Override
+  public com.example.tutorial.protos.StudentP getStudents(int index) {
+    return students_.get(index);
+  }
+  /**
+   * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+   */
+  @java.lang.Override
+  public com.example.tutorial.protos.StudentPOrBuilder getStudentsOrBuilder(
+      int index) {
+    return students_.get(index);
+  }
+
   private byte memoizedIsInitialized = -1;
   @java.lang.Override
   public final boolean isInitialized() {
@@ -326,6 +379,9 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000010) != 0)) {
       output.writeInt64(5, phoneNumber_);
     }
+    for (int i = 0; i < students_.size(); i++) {
+      output.writeMessage(6, students_.get(i));
+    }
     unknownFields.writeTo(output);
   }
 
@@ -351,6 +407,10 @@ private static final long serialVersionUID = 0L;
     if (((bitField0_ & 0x00000010) != 0)) {
       size += com.google.protobuf.CodedOutputStream
         .computeInt64Size(5, phoneNumber_);
+    }
+    for (int i = 0; i < students_.size(); i++) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(6, students_.get(i));
     }
     size += unknownFields.getSerializedSize();
     memoizedSize = size;
@@ -392,6 +452,8 @@ private static final long serialVersionUID = 0L;
       if (getPhoneNumber()
           != other.getPhoneNumber()) return false;
     }
+    if (!getStudentsList()
+        .equals(other.getStudentsList())) return false;
     if (!unknownFields.equals(other.unknownFields)) return false;
     return true;
   }
@@ -424,6 +486,10 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + PHONENUMBER_FIELD_NUMBER;
       hash = (53 * hash) + com.google.protobuf.Internal.hashLong(
           getPhoneNumber());
+    }
+    if (getStudentsCount() > 0) {
+      hash = (37 * hash) + STUDENTS_FIELD_NUMBER;
+      hash = (53 * hash) + getStudentsList().hashCode();
     }
     hash = (29 * hash) + unknownFields.hashCode();
     memoizedHashCode = hash;
@@ -529,13 +595,13 @@ private static final long serialVersionUID = 0L;
       com.example.tutorial.protos.ProfessorPOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_ProfessorP_descriptor;
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_ProfessorP_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_ProfessorP_fieldAccessorTable
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_ProfessorP_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
               com.example.tutorial.protos.ProfessorP.class, com.example.tutorial.protos.ProfessorP.Builder.class);
     }
@@ -553,6 +619,7 @@ private static final long serialVersionUID = 0L;
     private void maybeForceBuilderInitialization() {
       if (com.google.protobuf.GeneratedMessageV3
               .alwaysUseFieldBuilders) {
+        getStudentsFieldBuilder();
       }
     }
     @java.lang.Override
@@ -568,13 +635,19 @@ private static final long serialVersionUID = 0L;
       bitField0_ = (bitField0_ & ~0x00000008);
       phoneNumber_ = 0L;
       bitField0_ = (bitField0_ & ~0x00000010);
+      if (studentsBuilder_ == null) {
+        students_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+      } else {
+        studentsBuilder_.clear();
+      }
       return this;
     }
 
     @java.lang.Override
     public com.google.protobuf.Descriptors.Descriptor
         getDescriptorForType() {
-      return com.example.tutorial.protos.StudentsAndProfessors.internal_static_uc_mei_is_ProfessorP_descriptor;
+      return com.example.tutorial.protos.StudentsAndProfsProtos.internal_static_uc_mei_is_ProfessorP_descriptor;
     }
 
     @java.lang.Override
@@ -615,6 +688,15 @@ private static final long serialVersionUID = 0L;
       if (((from_bitField0_ & 0x00000010) != 0)) {
         result.phoneNumber_ = phoneNumber_;
         to_bitField0_ |= 0x00000010;
+      }
+      if (studentsBuilder_ == null) {
+        if (((bitField0_ & 0x00000020) != 0)) {
+          students_ = java.util.Collections.unmodifiableList(students_);
+          bitField0_ = (bitField0_ & ~0x00000020);
+        }
+        result.students_ = students_;
+      } else {
+        result.students_ = studentsBuilder_.build();
       }
       result.bitField0_ = to_bitField0_;
       onBuilt();
@@ -685,6 +767,32 @@ private static final long serialVersionUID = 0L;
       }
       if (other.hasPhoneNumber()) {
         setPhoneNumber(other.getPhoneNumber());
+      }
+      if (studentsBuilder_ == null) {
+        if (!other.students_.isEmpty()) {
+          if (students_.isEmpty()) {
+            students_ = other.students_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+          } else {
+            ensureStudentsIsMutable();
+            students_.addAll(other.students_);
+          }
+          onChanged();
+        }
+      } else {
+        if (!other.students_.isEmpty()) {
+          if (studentsBuilder_.isEmpty()) {
+            studentsBuilder_.dispose();
+            studentsBuilder_ = null;
+            students_ = other.students_;
+            bitField0_ = (bitField0_ & ~0x00000020);
+            studentsBuilder_ = 
+              com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                 getStudentsFieldBuilder() : null;
+          } else {
+            studentsBuilder_.addAllMessages(other.students_);
+          }
+        }
       }
       this.mergeUnknownFields(other.unknownFields);
       onChanged();
@@ -1044,6 +1152,246 @@ private static final long serialVersionUID = 0L;
       phoneNumber_ = 0L;
       onChanged();
       return this;
+    }
+
+    private java.util.List<com.example.tutorial.protos.StudentP> students_ =
+      java.util.Collections.emptyList();
+    private void ensureStudentsIsMutable() {
+      if (!((bitField0_ & 0x00000020) != 0)) {
+        students_ = new java.util.ArrayList<com.example.tutorial.protos.StudentP>(students_);
+        bitField0_ |= 0x00000020;
+       }
+    }
+
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.example.tutorial.protos.StudentP, com.example.tutorial.protos.StudentP.Builder, com.example.tutorial.protos.StudentPOrBuilder> studentsBuilder_;
+
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public java.util.List<com.example.tutorial.protos.StudentP> getStudentsList() {
+      if (studentsBuilder_ == null) {
+        return java.util.Collections.unmodifiableList(students_);
+      } else {
+        return studentsBuilder_.getMessageList();
+      }
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public int getStudentsCount() {
+      if (studentsBuilder_ == null) {
+        return students_.size();
+      } else {
+        return studentsBuilder_.getCount();
+      }
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public com.example.tutorial.protos.StudentP getStudents(int index) {
+      if (studentsBuilder_ == null) {
+        return students_.get(index);
+      } else {
+        return studentsBuilder_.getMessage(index);
+      }
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder setStudents(
+        int index, com.example.tutorial.protos.StudentP value) {
+      if (studentsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureStudentsIsMutable();
+        students_.set(index, value);
+        onChanged();
+      } else {
+        studentsBuilder_.setMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder setStudents(
+        int index, com.example.tutorial.protos.StudentP.Builder builderForValue) {
+      if (studentsBuilder_ == null) {
+        ensureStudentsIsMutable();
+        students_.set(index, builderForValue.build());
+        onChanged();
+      } else {
+        studentsBuilder_.setMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder addStudents(com.example.tutorial.protos.StudentP value) {
+      if (studentsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureStudentsIsMutable();
+        students_.add(value);
+        onChanged();
+      } else {
+        studentsBuilder_.addMessage(value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder addStudents(
+        int index, com.example.tutorial.protos.StudentP value) {
+      if (studentsBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        ensureStudentsIsMutable();
+        students_.add(index, value);
+        onChanged();
+      } else {
+        studentsBuilder_.addMessage(index, value);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder addStudents(
+        com.example.tutorial.protos.StudentP.Builder builderForValue) {
+      if (studentsBuilder_ == null) {
+        ensureStudentsIsMutable();
+        students_.add(builderForValue.build());
+        onChanged();
+      } else {
+        studentsBuilder_.addMessage(builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder addStudents(
+        int index, com.example.tutorial.protos.StudentP.Builder builderForValue) {
+      if (studentsBuilder_ == null) {
+        ensureStudentsIsMutable();
+        students_.add(index, builderForValue.build());
+        onChanged();
+      } else {
+        studentsBuilder_.addMessage(index, builderForValue.build());
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder addAllStudents(
+        java.lang.Iterable<? extends com.example.tutorial.protos.StudentP> values) {
+      if (studentsBuilder_ == null) {
+        ensureStudentsIsMutable();
+        com.google.protobuf.AbstractMessageLite.Builder.addAll(
+            values, students_);
+        onChanged();
+      } else {
+        studentsBuilder_.addAllMessages(values);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder clearStudents() {
+      if (studentsBuilder_ == null) {
+        students_ = java.util.Collections.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000020);
+        onChanged();
+      } else {
+        studentsBuilder_.clear();
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public Builder removeStudents(int index) {
+      if (studentsBuilder_ == null) {
+        ensureStudentsIsMutable();
+        students_.remove(index);
+        onChanged();
+      } else {
+        studentsBuilder_.remove(index);
+      }
+      return this;
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public com.example.tutorial.protos.StudentP.Builder getStudentsBuilder(
+        int index) {
+      return getStudentsFieldBuilder().getBuilder(index);
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public com.example.tutorial.protos.StudentPOrBuilder getStudentsOrBuilder(
+        int index) {
+      if (studentsBuilder_ == null) {
+        return students_.get(index);  } else {
+        return studentsBuilder_.getMessageOrBuilder(index);
+      }
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public java.util.List<? extends com.example.tutorial.protos.StudentPOrBuilder> 
+         getStudentsOrBuilderList() {
+      if (studentsBuilder_ != null) {
+        return studentsBuilder_.getMessageOrBuilderList();
+      } else {
+        return java.util.Collections.unmodifiableList(students_);
+      }
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public com.example.tutorial.protos.StudentP.Builder addStudentsBuilder() {
+      return getStudentsFieldBuilder().addBuilder(
+          com.example.tutorial.protos.StudentP.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public com.example.tutorial.protos.StudentP.Builder addStudentsBuilder(
+        int index) {
+      return getStudentsFieldBuilder().addBuilder(
+          index, com.example.tutorial.protos.StudentP.getDefaultInstance());
+    }
+    /**
+     * <code>repeated .uc.mei.is.StudentP students = 6;</code>
+     */
+    public java.util.List<com.example.tutorial.protos.StudentP.Builder> 
+         getStudentsBuilderList() {
+      return getStudentsFieldBuilder().getBuilderList();
+    }
+    private com.google.protobuf.RepeatedFieldBuilderV3<
+        com.example.tutorial.protos.StudentP, com.example.tutorial.protos.StudentP.Builder, com.example.tutorial.protos.StudentPOrBuilder> 
+        getStudentsFieldBuilder() {
+      if (studentsBuilder_ == null) {
+        studentsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+            com.example.tutorial.protos.StudentP, com.example.tutorial.protos.StudentP.Builder, com.example.tutorial.protos.StudentPOrBuilder>(
+                students_,
+                ((bitField0_ & 0x00000020) != 0),
+                getParentForChildren(),
+                isClean());
+        students_ = null;
+      }
+      return studentsBuilder_;
     }
     @java.lang.Override
     public final Builder setUnknownFields(

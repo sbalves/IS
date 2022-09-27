@@ -4,15 +4,7 @@ package uc.mei.is;
 
 option java_multiple_files = true;
 option java_package = "com.example.tutorial.protos";
-// option java_outer_classname = "AddressBookProtos";
-
-message ProfessorP {
-  optional int64 id = 1;
-  optional string name = 2;
-  optional string birthDate = 3;
-  optional string address = 4;
-  optional int64 phoneNumber = 5;
-}
+option java_outer_classname = "StudentsAndProfsProtos";
 
 message StudentP {
   optional int64 id = 1;
@@ -23,3 +15,18 @@ message StudentP {
   optional string gender = 6;
   optional string registrationDate = 7;
 }
+
+message ProfessorP {
+  optional int64 id = 1;
+  optional string name = 2;
+  optional string birthDate = 3;
+  optional string address = 4;
+  optional int64 phoneNumber = 5;
+  repeated StudentP students = 6;
+}
+
+message School{
+  repeated ProfessorP professors = 1;
+}
+
+
