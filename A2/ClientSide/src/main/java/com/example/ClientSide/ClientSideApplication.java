@@ -2,32 +2,61 @@ package com.example.ClientSide;
 
 import Entities.Student;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 public class ClientSideApplication {
-	/*
-	 * public static Flux<Student> getstudents() {
-	 * WebClient client = WebClient.create();
-	 * return client.get()
-	 * .uri("/student")
-	 * .retrieve()
-	 * .bodyToFlux(Student.class);
-	 * }
-	 */
+
+	// 1. Names and birthdates of all students.
+	public static void getStudentsBirthDate(WebClient client) {
+		Student fluxStudents = client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.doOnNext(cr-> System.out.println("######### Name: " + cr.getName() + "\t\tBirth Date: " + cr.getBirth_date()))
+				.blockLast();
+	}
 
 	// 2. Number of students
-	public static void getNumberStudents(Flux<Student> fluxStudents) {
-		System.out.println(fluxStudents.count().block());
+	public static void getTotalStudents(WebClient client) {
+		Flux<Student> fluxStudents = client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class);
+
+		System.out.println("######### Total number of students: " + fluxStudents.count().block());
 	}
 
-	public static void getStudentsBirthDate(Flux<Student> fluxStudents) {
+	// 3. Total number of students that are active (i.e., that have less than 180 credits).
+	public static void getActiveStudents(WebClient client) {
+		Long activeStudents = client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.filter(cr-> cr.getCompleted__credits() < 180)
+				.count()
+				.block();
 
-		fluxStudents.subscribe(System.out::println);
-		// studentsFlux.subscribe(c-> System.out.println(c.getBirth_date()));
-		// System.out.println(responseSpec);
-
+		System.out.println("######### Total number of active students (credits < 180): " + activeStudents);
 	}
+
+	// 4. Total number of courses completed for all students
+	public static void getTotalCompletedCourses(WebClient client) {
+		int completedCourses = 0;
+        completedCourses = client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+                .map(cr-> cr.getCompleted__credits()/6)
+                .reduce(Integer::sum)
+                .subscribe();
+
+		System.out.println("######### Total number of courses completed for all students: " + completedCourses);
+	}
+
+
+
 
 	public static void main(String[] args) {
 		/*
@@ -35,13 +64,12 @@ public class ClientSideApplication {
 		 * students.subscribe(System.out::println);
 		 * students.doOnNext(c->System.out.println(c.getBirth_date()));
 		 */
-		WebClient client = WebClient.create();
-		Flux<Student> fluxStudents = client.get()
-				.uri("http://localhost:8080/api/student")
-				.retrieve()
-				.bodyToFlux(Student.class);
+		WebClient client = WebClient.create("http://localhost:8080/api");
 
-		getNumberStudents(fluxStudents);
-		getStudentsBirthDate(fluxStudents);
+
+		getStudentsBirthDate(client);
+		getTotalStudents(client);
+		getActiveStudents(client);
+        getTotalCompletedCourses(client);
 	}
 }
