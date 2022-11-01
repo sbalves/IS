@@ -43,20 +43,44 @@ public class ClientSideApplication {
 
 	// 4. Total number of courses completed for all students
 	public static void getTotalCompletedCourses(WebClient client) {
-		int completedCourses = 0;
-        completedCourses = client.get()
+		Integer completedCourses = client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
                 .map(cr-> cr.getCompleted__credits()/6)
                 .reduce(Integer::sum)
-                .subscribe();
-
-		System.out.println("######### Total number of courses completed for all students: " + completedCourses);
+				.doOnNext(c-> System.out.println("######### Total number of courses completed for all students: " + c))
+                .block();
 	}
 
+	// 5. Data of students that are in the last year of their graduation (i.e., whose credits
+	//are at least 120 and less than 180)
+	public static void getDataGraduates(WebClient client) {
+	}
 
+	// 6. Average and standard deviations of all student grades.
+	public static void getAvgStdGrades(WebClient client) {
+	}
 
+	// 7. Average and standard deviations of students who have finished their graduation
+	public static void getAvgStdGradesGraduate(WebClient client) {
+	}
+
+	// 8. The name of the eldest student.
+	public static void getEldestStudent(WebClient client) {
+	}
+
+	// 9. Average number of professors per student.
+	public static void getAvgProfessors(WebClient client) {
+	}
+
+	// 10. Name and number of students per professor, sorted in descending order.
+	public static void getListStudentsPerProfessor(WebClient client) {
+	}
+
+	// 11. Complete data of all students, by adding the names of their professors.
+	public static void getListAllStudents(WebClient client) {
+	}
 
 	public static void main(String[] args) {
 		/*
@@ -71,5 +95,14 @@ public class ClientSideApplication {
 		getTotalStudents(client);
 		getActiveStudents(client);
         getTotalCompletedCourses(client);
+
+		//to do (já estão os nomes definidos porque n confio na tua organização nem que vás seguir as conveções do java -_-)
+		getDataGraduates(client);
+		getAvgStdGrades(client);
+		getAvgStdGradesGraduate(client);
+		getEldestStudent(client);
+		getAvgProfessors(client);
+		getListStudentsPerProfessor(client);
+		getListAllStudents(client);
 	}
 }
