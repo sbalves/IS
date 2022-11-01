@@ -35,6 +35,7 @@ INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES
 INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES ('Sofia Eduarda', '2000–11–05', 180, 11);
 INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES ('Joao Mercedes', '1996–04–23', 190, 13);
 INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES ('Antonio Pais', '2005–06–03', 130, 14);
+INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES ('Mariana Paiva', '1999–06–03', 170, 12);
 INSERT INTO student (name, birth_date, completed__credits, average_grade) VALUES ('Vicente Alcede ', '1998–06–03', 200, 15);
 INSERT INTO student_professor (student_id, professor_id) VALUES (1, 1);
 INSERT INTO student_professor (student_id, professor_id) VALUES (2, 2);
