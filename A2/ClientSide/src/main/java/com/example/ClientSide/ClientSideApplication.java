@@ -6,7 +6,13 @@ import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.stream.Collector;
+
+import static java.lang.Math.pow;
+import static java.lang.Math.sqrt;
+import static java.util.Collections.sort;
 
 public class ClientSideApplication {
 
@@ -36,16 +42,19 @@ public class ClientSideApplication {
 	}
 
 	// 3. Total number of students that are active (i.e., that have less than 180 credits).
-	public static void getActiveStudents(WebClient client) {
-		Long activeStudents = client.get()
+	public static Long getActiveStudents(WebClient client) {
+		return client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
 				.filter(cr-> cr.getCompleted__credits() < 180)
 				.count()
 				.block();
+	}
 
-		System.out.println("######### Total number of active students (credits < 180): " + activeStudents);
+
+	public static void printActiveStutents(WebClient client){
+		System.out.println("######### Total number of active students (credits < 180): " + getActiveStudents(client));
 	}
 
 	// 4. Total number of courses completed for all students
@@ -63,49 +72,97 @@ public class ClientSideApplication {
 	// 5. Data of students that are in the last year of their graduation (i.e., whose credits
 	//are at least 120 and less than 180)
 	public static void getDataGraduates(WebClient client) {
-		Student activeStudents = client.get()
+		client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
 				.filter(cr->  cr.getCompleted__credits() >= 120 && cr.getCompleted__credits() < 180)
 				.sort((s1,s2) -> s2.getCompleted__credits() - s1.getCompleted__credits())
-				.doOnNext(cr -> System.out.println(cr))
+				.doOnNext(System.out::println)
 				.blockLast();
 	}
 
 
 	// 6. Average and standard deviations of all student grades.
-	public static Double getAvgGrades(WebClient client) {
+	public static void getAvgStdGrades(WebClient client) {
 		Long totalStudents = getTotalStudents(client);
-		return Double.valueOf(client.get()
+
+		Long mean = client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
 				.map(Student::getAverage_grade)
 				.reduce(Integer::sum)
 				.map(cr -> cr/totalStudents)
-				.block());
-	}
+				.block();
 
-	public static Double getStdGrades(WebClient client) {
-		Long totalStudents = getTotalStudents(client);
-		return Double.valueOf(client.get()
+		System.out.println("######### Average of grades of all students: " + mean);
+
+		client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
-				.map(Student::getAverage_grade)
-				.map(cr -> stddev(cr))
-				.map(cr -> cr/totalStudents)
-				.block());
+				.map(cr -> pow(cr.getAverage_grade() - mean, 2))
+				.reduce(Double::sum)
+				.map(cr -> sqrt(cr / totalStudents))
+				.doOnNext(cr -> System.out.println("######### Standard deviation of grades of all students: " + cr))
+				.block();
 	}
 
 	// 7. Average and standard deviations of students who have finished their graduation
 	public static void getAvgStdGradesGraduate(WebClient client) {
+		Long totalGraduatedStudents = getTotalStudents(client) - getActiveStudents(client);
+
+		Long meanGraduates = client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.filter(cr -> cr.getCompleted__credits() >= 180)
+				.map(Student::getAverage_grade)
+				.reduce(Integer::sum)
+				.map(cr -> cr / totalGraduatedStudents)
+				.block();
+
+
+		System.out.println("######### Average of grades of all students who have finished their graduation: " + meanGraduates);
+
+		client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.filter(cr -> cr.getCompleted__credits() >= 180)
+				.map(cr -> pow(cr.getAverage_grade() - meanGraduates, 2))
+				.reduce(Double::sum)
+				.map(cr -> sqrt(cr / totalGraduatedStudents))
+				.doOnNext(cr -> System.out.println("######### Standard deviation of grades of students who have finished their graduation: " + cr))
+				.block();
+
 	}
 
 	// 8. The name of the eldest student.
+	/*
 	public static void getEldestStudent(WebClient client) {
+		SimpleDateFormat formatter1=new SimpleDateFormat("dd-MM-yyyy");
+
+		client.get()
+				.uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.map(cr -> {
+					try {
+						return formatter1.parse(cr.getBirth_date());
+					} catch (ParseException e) {
+						throw new RuntimeException(e);
+					}
+				})
+				.sort()
+				.take(1)
+				.doOnNext(cr -> System.out.println("######### Eldest student: " + cr.ge));
+
+
 	}
+	*/
+
 
 	// 9. Average number of professors per student.
 	public static void getAvgProfessors(WebClient client) {
@@ -120,13 +177,8 @@ public class ClientSideApplication {
 	}
 
 	public static void main(String[] args) {
-		/*
-		 * Flux<Student> students = getstudents();
-		 * students.subscribe(System.out::println);
-		 * students.doOnNext(c->System.out.println(c.getBirth_date()));
-		 */
-		WebClient client = WebClient.create("http://localhost:8081/api");
 
+		WebClient client = WebClient.create("http://localhost:8081/api");
 
 		getStudentsBirthDate(client);
 		printTotalStudents(client);
@@ -137,9 +189,11 @@ public class ClientSideApplication {
 		getDataGraduates(client);
 		getAvgStdGrades(client);
 		getAvgStdGradesGraduate(client);
-		getEldestStudent(client);
+		//getEldestStudent(client);
 		getAvgProfessors(client);
 		getListStudentsPerProfessor(client);
 		getListAllStudents(client);
 	}
+
+
 }
