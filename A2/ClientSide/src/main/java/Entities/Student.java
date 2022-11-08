@@ -2,11 +2,15 @@ package Entities;
 
 public class Student {
 
+    private long id;
     private String name;
     private String birth_date;
     private Integer completed__credits;
     private Integer average_grade;
 
+    public long getId() {
+        return id;
+    }
 
     public String getName() {
         return name;
@@ -18,6 +22,10 @@ public class Student {
 
     public Integer getCompleted__credits() {
         return completed__credits;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public void setName(String name) {
