@@ -49,7 +49,7 @@ public class Student {
     }
 
     public String toString(){
-        return "name: " + this.name + " birth date: " + this.birth_date + " completed credits: " + this.completed__credits + " average grade: " + this.average_grade;
+        return "Name: " + this.name + "\t|\tBirth date: " + this.birth_date + "\t|\tCompleted credits: " + this.completed__credits + "\t|\tAverage grade: " + this.average_grade;
     }
 
 }

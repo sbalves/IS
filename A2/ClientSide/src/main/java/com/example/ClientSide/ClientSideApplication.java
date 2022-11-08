@@ -7,6 +7,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -30,7 +31,7 @@ public class ClientSideApplication{
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
-				.doOnNext(cr-> System.out.println("\tName: " + cr.getName() + "\t\tBirth Date: " + cr.getBirth_date()))
+				.doOnNext(cr-> System.out.println("\t\tName: " + cr.getName() + "\t\tBirth Date: " + cr.getBirth_date()))
 				.blockLast();
 		System.out.println();
 	}
@@ -67,14 +68,14 @@ public class ClientSideApplication{
 
 	// 4. Total number of courses completed for all students
 	public static void getTotalCompletedCourses(WebClient client) {
+		System.out.println("#### 4 ####\n\tTotal number of courses completed for all students:");
 		client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
-                .map(cr-> cr.getCompleted__credits()/6)
-                .reduce(Integer::sum)
-				.doOnNext(c-> System.out.println("#### 4 ####\n\tTotal number of courses completed for all students: " + c + "\n"))
-                .block();
+				.doOnNext(student -> System.out.println("\t\t" + student.getName() + ": " + student.getCompleted__credits()/6))
+                .blockLast();
+		System.out.println();
 	}
 
 	// 5. Data of students that are in the last year of their graduation (i.e., whose credits
@@ -178,6 +179,22 @@ public class ClientSideApplication{
 
 	// 9. Average number of professors per student.
 	public static void getAvgProfessors(WebClient client) {
+		Long totalStudents = getTotalStudents(client);
+		client.get().uri("/student")
+				.retrieve()
+				.bodyToFlux(Student.class)
+				.publishOn(Schedulers.boundedElastic())
+				.map(cr -> client.get().uri("/student_professor")
+						.retrieve()
+						.bodyToFlux(Student_professor.class)
+						.filter(a -> Objects.equals(a.getStudent_id(),cr.getId()))
+						.count()
+						.block())
+				.reduce(Long::sum)
+				.map(cr -> Double.valueOf(cr) / totalStudents)
+				.doOnNext(average -> System.out.println("#### 9 ####\n\tAverage number of professors per student: " + average))
+				.block();
+		System.out.println();
 	}
 
 	// 10. Name and number of students per professor, sorted in descending order.
@@ -186,26 +203,33 @@ public class ClientSideApplication{
 
 	// 11. Complete data of all students, by adding the names of their professors.
 	public static void getListAllStudents(WebClient client) {
+		System.out.println("#### 11 ####\n\tData of all students + their professors:");
+
 		client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
-				.doOnNext(cr -> {
-					System.out.println("#### " + cr.toString());
-					System.out.println("Professors: ");
+				.publishOn(Schedulers.boundedElastic())
+				.doOnNext(student -> {
+					System.out.println("\t\t" + student.toString());
+					System.out.println("\t\t" + student.getName() + "'s professors: ");
+
+
 					client.get()
 							.uri("/student_professor")
 							.retrieve()
 							.bodyToFlux(Student_professor.class)
-							.filter(a -> Objects.equals(a.getStudent_id(), cr.getId()))
+							.publishOn(Schedulers.boundedElastic())
+							.filter(student_professor -> student_professor.getStudent_id() == student.getId())
 							.doOnNext(relationship -> {
 								client.get()
 										.uri("/professor/" + relationship.getProfessor_id())
 										.retrieve()
 										.bodyToFlux(Professor.class)
-										.doOnNext(prof -> System.out.println(prof.getName()))
+										.doOnNext(prof -> System.out.println("\t\t\t" + prof.getName()))
 										.blockLast();
-							});
+							}).blockLast();
+					System.out.println("\t\t-----\n");
 				})
 				.blockLast();
 
