@@ -18,6 +18,8 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 
 @RestController
@@ -26,23 +28,30 @@ import reactor.core.scheduler.Schedulers;
 @Slf4j
 public class StudentController {
 
+    public void logger(String message){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now) + " | " + message);
+    }
     private final StudentRepository studentRepository;
     private final Student_professorRepository student_professorRepository;
 
     @GetMapping
     public Flux<Student> getAll() {
-      return studentRepository.findAll();
+        logger("Client requested list of all students.");
+        return studentRepository.findAll();
     }
 
     @GetMapping(value = "/{id}")
     public Mono<Student> getOne(@PathVariable Long id) {
-        System.out.println("MACACO");
-      return studentRepository.findById(id);
+        logger("Client requested student " + id + ".");
+        return studentRepository.findById(id);
     }
 
     @PostMapping
     public Mono<Student> createStudent(@RequestBody Student student) {
-      return studentRepository.save(student);
+        logger("Client requested to create student " + student.getId() + ".");
+        return studentRepository.save(student);
     }
 
     @PostMapping(value = "/{number}")
@@ -50,7 +59,7 @@ public class StudentController {
       return generateRandomStudent(number).subscribeOn(Schedulers.boundedElastic());
     }
 
-    private Flux<Student> generateRandomStudent(int number) {
+    private Flux<Student> generateRandomStudent(int numberq) {
       return Mono.fromSupplier(
                       () -> Student.builder().name(RandomStringUtils.randomAlphabetic(5)).build())
               .flatMap(studentRepository::save)
@@ -59,13 +68,14 @@ public class StudentController {
 
     @PutMapping
     public Mono<Student> updateStudent(@RequestBody Student student) {
-      return studentRepository
+        logger("Client requested to update student " + student.getId() + ".");
+        return studentRepository
               .findById(student.getId())
               .flatMap(studentResult -> studentRepository.save(student));
     }
       @DeleteMapping
       public Mono<Void> deleteStudent(@RequestBody Student student) {
-
+        logger("Client requested to delete student " + student.getId() + " .");
         return studentRepository.deleteById(student.getId());
 
       }

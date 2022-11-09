@@ -18,21 +18,32 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @RestController
 @RequestMapping(value = "/api/student_professor")
 @RequiredArgsConstructor
 @Slf4j
 public class Student_professorController {
 
+    public void logger(String message){
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        LocalDateTime now = LocalDateTime.now();
+        System.out.println(dtf.format(now) + " | " + message);
+    }
+
     private final Student_professorRepository Student_professorRepository;
 
     @GetMapping
     public Flux<Student_professor> getAll() {
+        logger("Client requested all relationships.");
         return Student_professorRepository.findAll();
     }
 
     @GetMapping(value = "/{id}")
     public Mono<Student_professor> getOne(@PathVariable Long id) {
+        logger("Client requested relationship " + id + ".");
         return Student_professorRepository.findById(id);
     }
 
@@ -51,6 +62,7 @@ public class Student_professorController {
 
     @DeleteMapping
     public Mono<Void> deleteStudent_Professor(@RequestBody Student_professor student_professor) {
+        logger("Client requested to delete relationship " + student_professor.getId() + "(preofessor " +  student_professor.getProfessor_id() + " and student " + student_professor.getStudent_id() + ".");
         return Student_professorRepository.deleteById(student_professor.getId());
     }
 }

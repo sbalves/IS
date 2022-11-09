@@ -17,26 +17,40 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
+
 @RestController
 @RequestMapping(value = "/api/professor")
 @RequiredArgsConstructor
 @Slf4j
 public class ProfessorController {
 
-  private final ProfessorRepository professorRepository;
+  public void logger(String message){
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+    System.out.println(dtf.format(now) + " | " + message);
+  }
 
+
+  private final ProfessorRepository professorRepository;
+  
   @GetMapping
   public Flux<Professor> getAll() {
+    logger("Client requested list of all professors.");
     return professorRepository.findAll();
   }
 
   @GetMapping(value = "/{id}")
   public Mono<Professor> getOne(@PathVariable Long id) {
+    logger("Client requested professor " + id + ".");
     return professorRepository.findById(id);
   }
 
   @PostMapping
   public Mono<Professor> createProfessor(@RequestBody Professor professor) {
+    logger("Client requested to create professor " + professor.getId() + ".");
     return professorRepository.save(professor);
   }
 
@@ -54,6 +68,7 @@ public class ProfessorController {
 
   @PutMapping
   public Mono<Professor> updateProfessor(@RequestBody Professor professor) {
+    logger("Client requested to update professor " + professor.getId() + ".");
     return professorRepository
         .findById(professor.getId())
         .flatMap(professorResult -> professorRepository.save(professor));
@@ -61,6 +76,7 @@ public class ProfessorController {
 
   @DeleteMapping
   public Mono<Void> deleteProfessor(@RequestBody Professor professor) {
+    logger("Client requested to delete professor " + professor.getId() + " .");
     return professorRepository.deleteById(professor.getId());
   }
 

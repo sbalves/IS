@@ -4,21 +4,15 @@ import Entities.Professor;
 import Entities.Student;
 import Entities.Student_professor;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.Disposable;
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.Objects;
-import java.util.stream.Collector;
 
 import static java.lang.Math.pow;
 import static java.lang.Math.sqrt;
-import static java.util.Collections.copy;
 import static java.util.Collections.sort;
 
 
@@ -68,13 +62,14 @@ public class ClientSideApplication{
 
 	// 4. Total number of courses completed for all students
 	public static void getTotalCompletedCourses(WebClient client) {
-		System.out.println("#### 4 ####\n\tTotal number of courses completed for all students:");
 		client.get()
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
-				.doOnNext(student -> System.out.println("\t\t" + student.getName() + ": " + student.getCompleted__credits()/6))
-                .blockLast();
+				.map(cr-> cr.getCompleted__credits()/6)
+				.reduce(Integer::sum)
+				.doOnNext(c-> System.out.println("#### 4 ####\n\tTotal number of courses completed for all students: " + c))
+				.block();
 		System.out.println();
 	}
 
@@ -198,7 +193,31 @@ public class ClientSideApplication{
 	}
 
 	// 10. Name and number of students per professor, sorted in descending order.
-	public static void getListStudentsPerProfessor(WebClient client) {
+	public static void getNumberStudentsPerProfessor(WebClient client) {
+		System.out.println("#### 10 ####\n\tName and number of students per professor");
+		client.get().uri("/professor")
+				.retrieve()
+				.bodyToFlux(Professor.class)
+				.publishOn(Schedulers.boundedElastic())
+				.sort((c,d) -> Objects.requireNonNull(client.get().uri("/student_professor")
+						.retrieve()
+						.bodyToFlux(Student_professor.class)
+						.filter(a -> Objects.equals(a.getProfessor_id(), d.getId()))
+						.count()
+						.block()).compareTo(Objects.requireNonNull(client.get().uri("/student_professor")
+						.retrieve()
+						.bodyToFlux(Student_professor.class)
+						.filter(a -> Objects.equals(a.getProfessor_id(), c.getId()))
+						.count()
+						.block())))
+				.doOnNext(cr -> {System.out.println("\t\t" + cr.getName() + ":" +  client.get().uri("/student_professor")
+						.retrieve()
+						.bodyToFlux(Student_professor.class)
+						.filter(a -> Objects.equals(a.getProfessor_id(),cr.getId()))
+						.count()
+						.block());})
+				.blockLast();
+		System.out.println();
 	}
 
 	// 11. Complete data of all students, by adding the names of their professors.
@@ -250,7 +269,7 @@ public class ClientSideApplication{
 		getAvgStdGradesGraduate(client);
 		getEldestStudent(client);
 		getAvgProfessors(client);
-		getListStudentsPerProfessor(client);
+		getNumberStudentsPerProfessor(client);
 		getListAllStudents(client);
 	}
 
