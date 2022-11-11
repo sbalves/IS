@@ -256,7 +256,7 @@ public class ClientSideApplication{
 
 	public static void main(String[] args) {
 
-		WebClient client = WebClient.create("http://localhost:8080/api");
+		WebClient client = WebClient.create("http://localhost:8081/api");
 
 		getStudentsBirthDate(client);
 		printTotalStudents(client);

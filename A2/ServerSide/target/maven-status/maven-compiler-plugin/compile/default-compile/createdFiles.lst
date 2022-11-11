@@ -1,0 +1,16 @@
+com\khm\reactivepostgres\config\PostgresAuditorAwareConfiguration.class
+com\khm\reactivepostgres\dto\CreateStudentWebRequest.class
+com\khm\reactivepostgres\ReactivePostgresApplication.class
+com\khm\reactivepostgres\repository\Student_professorRepository.class
+com\khm\reactivepostgres\repository\StudentRepository.class
+com\khm\reactivepostgres\repository\ProfessorRepository.class
+com\khm\reactivepostgres\entity\Student.class
+com\khm\reactivepostgres\service\TransactionalService.class
+com\khm\reactivepostgres\entity\Student_professor.class
+com\khm\reactivepostgres\entity\Professor.class
+com\khm\reactivepostgres\entity\Student$StudentBuilder.class
+com\khm\reactivepostgres\entity\Student_professor$Student_professorBuilder.class
+com\khm\reactivepostgres\entity\Professor$ProfessorBuilder.class
+com\khm\reactivepostgres\controller\StudentController.class
+com\khm\reactivepostgres\controller\ProfessorController.class
+com\khm\reactivepostgres\controller\Student_professorController.class
