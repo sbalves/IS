@@ -23,6 +23,15 @@ import java.util.logging.SimpleFormatter;
 
 import static java.nio.file.Files.deleteIfExists;
 
+/*
+################################
+Authors:
+################################
+Sofia Botelho         2019227240
+João Dionísio         2019217030
+################################
+*/
+
 @SpringBootApplication
 @EnableR2dbcAuditing
 public class ReactivePostgresApplication {
