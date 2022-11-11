@@ -1,0 +1,13 @@
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\dto\CreateStudentWebRequest.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\repository\StudentRepository.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\config\PostgresAuditorAwareConfiguration.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\entity\Student_professor.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\repository\ProfessorRepository.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\repository\Student_professorRepository.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\entity\Student.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\controller\ProfessorController.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\service\TransactionalService.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\controller\Student_professorController.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\entity\Professor.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\controller\StudentController.java
+C:\Users\jpedr\Desktop\Mestrado\1_ano\IS\ServerSide\src\main\java\com\khm\reactivepostgres\ReactivePostgresApplication.java
