@@ -18,6 +18,14 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 
+import java.io.File;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 
 @RestController
@@ -26,46 +34,54 @@ import reactor.core.scheduler.Schedulers;
 @Slf4j
 public class StudentController {
 
+    public void logger(String message){
+        Logger logger = Logger.getLogger("MyLog");
+        logger.setLevel(Level.FINE);
+        FileHandler fh;
+        try {
+            fh = new FileHandler("MyLogFile.log", true);
+            logger.addHandler(fh);
+            SimpleFormatter formatter = new SimpleFormatter();
+            fh.setFormatter(formatter);
+            logger.info(message);
+            fh.close();
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
     private final StudentRepository studentRepository;
     private final Student_professorRepository student_professorRepository;
 
     @GetMapping
     public Flux<Student> getAll() {
-      return studentRepository.findAll();
+        logger("Client requested list of all students.");
+        return studentRepository.findAll();
     }
 
     @GetMapping(value = "/{id}")
     public Mono<Student> getOne(@PathVariable Long id) {
-        System.out.println("MACACO");
-      return studentRepository.findById(id);
+        logger("Client requested student " + id + ".");
+        return studentRepository.findById(id);
     }
 
     @PostMapping
     public Mono<Student> createStudent(@RequestBody Student student) {
-      return studentRepository.save(student);
-    }
-
-    @PostMapping(value = "/{number}")
-    public Flux<Student> createStudents(@PathVariable int number) {
-      return generateRandomStudent(number).subscribeOn(Schedulers.boundedElastic());
-    }
-
-    private Flux<Student> generateRandomStudent(int number) {
-      return Mono.fromSupplier(
-                      () -> Student.builder().name(RandomStringUtils.randomAlphabetic(5)).build())
-              .flatMap(studentRepository::save)
-              .repeat(number);
+        logger("Client requested to create student.");
+        return studentRepository.save(student);
     }
 
     @PutMapping
     public Mono<Student> updateStudent(@RequestBody Student student) {
-      return studentRepository
+        logger("Client requested to update student " + student.getId() + ".");
+        return studentRepository
               .findById(student.getId())
               .flatMap(studentResult -> studentRepository.save(student));
     }
       @DeleteMapping
       public Mono<Void> deleteStudent(@RequestBody Student student) {
-
+        logger("Client requested to delete student " + student.getId() + " .");
         return studentRepository.deleteById(student.getId());
 
       }
