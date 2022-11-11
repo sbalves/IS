@@ -25,6 +25,8 @@ public class ClientSideApplication{
 				.uri("/student")
 				.retrieve()
 				.bodyToFlux(Student.class)
+				.retryWhen(Retry.fixedDelay(3, Duration.ofSeconds(5)))
+				.doOnError(a -> System.out.println("[ERROR] Failed to connect to server."))
 				.doOnNext(cr-> System.out.println("\t\tName: " + cr.getName() + "\t\tBirth Date: " + cr.getBirth_date()))
 				.blockLast();
 		System.out.println();
