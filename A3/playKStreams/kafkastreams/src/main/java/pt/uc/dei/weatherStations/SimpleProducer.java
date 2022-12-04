@@ -5,26 +5,28 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.github.javafaker.Faker;
 import java.util.Random;
 
 public class SimpleProducer {
+    static String [] locations = {"Celas","Solum","S.Jose","Se Velha","Se Nova","Portela","S.Martinho","Baixa"}; 
+    static String [] type = {"red","green"};
+    static Random rand = new Random();
 
-
-    public static String generateStandardWeather(){
-        String [] locations = {"150 Carroll Causeway","12782 Kirby Avenue","115 Cole Rue","51930 Lincoln Trail","65807 Wolf Club","623 Kihn Bridge","02854 Joanne Junctions","36962 Carter Loop","83065 Weissnat Freeway","9473 Kuhic Prairie"};        
-        Random rand = new Random();
-        return locations[rand.nextInt(10)] + "#" +  rand.nextInt(-10,40);
-    } 
     
-    public static String generateWeatherAlert(){
-        String [] type = {"red","green"};
-        String [] locations = {"150 Carroll Causeway","12782 Kirby Avenue","115 Cole Rue","51930 Lincoln Trail","65807 Wolf Club","623 Kihn Bridge","02854 Joanne Junctions","36962 Carter Loop","83065 Weissnat Freeway","9473 Kuhic Prairie"};        
-        Random rand = new Random();
-        return locations[rand.nextInt(10)] + "#" +  type[rand.nextInt(2)];
-    } 
-    
+    public static ProducerRecord<String, String> generateWeatherEvent(String topicName, String station) {
+        ObjectNode transaction = JsonNodeFactory.instance.objectNode();
+        transaction.put("location", locations[rand.nextInt(8)]);
+        if(topicName == "StandardWeather")
+            transaction.put("temperature",  rand.nextInt(-10,40));
+        else
+            transaction.put("type", type[rand.nextInt(2)]);
+        return new ProducerRecord<>(topicName, station, transaction.toString());
+    }
 
+   
 
     public static void main(String[] args) throws Exception{ //Assign topicName to string variable
 
@@ -32,7 +34,7 @@ public class SimpleProducer {
 
         // create instance for properties to access producer configs
         Properties props = new Properties(); //Assign localhost id
-        props.put("bootstrap.servers", "broker1:9092");
+        props.put("bootstrap.servers", "broker1:9092"); // adicionar mais um broker
         //Set acknowledgements for producer requests. props.put("acks", "all");
         //If the request fails, the producer can automatically retry,
         props.put("retries", 0);
@@ -43,16 +45,15 @@ public class SimpleProducer {
         //The buffer.memory controls the total amount of memory available to the producer for buffering.
         props.put("buffer.memory", 33554432);
         props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-        props.put("value.serializer", "org.apache.kafka.common.serialization.LongSerializer");
+        props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 
         for(String topicName : topicNames){
-            Producer<String, Long> producer = new KafkaProducer<>(props);
-            for(int i = 0; i < 1000; i++) {
-                if(topicName=="StandardWeather")
-                    producer.send(new ProducerRecord<String, Long>(topicName, generateStandardWeather(),(long) i));
-                else
-                    producer.send(new ProducerRecord<String, Long>(topicName, generateWeatherAlert(),(long) i));
-                if (i % 100 == 0)
+            Producer<String, String> producer = new KafkaProducer<>(props);
+            for(int i = 0; i < 30; i++) {
+                    producer.send(generateWeatherEvent(topicName, "WS1"));
+                    producer.send(generateWeatherEvent(topicName, "WS2"));
+                    producer.send(generateWeatherEvent(topicName, "WS3"));
+                if (i % 10 == 0)
                     System.out.println("Sending message " + (i + 1) + " to topic " + topicName);
             }
             producer.close();

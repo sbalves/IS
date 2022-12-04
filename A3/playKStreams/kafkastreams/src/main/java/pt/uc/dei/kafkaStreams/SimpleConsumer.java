@@ -28,22 +28,23 @@ public class SimpleConsumer {
         props.put("buffer.memory", 33554432);
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "KafkaExampleConsumer");
         props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        props.put("value.deserializer", "org.apache.kafka.common.serialization.LongDeserializer");
+        props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         
         for(String topicName : topicNames){
-            Consumer<String, Long> consumer = new KafkaConsumer<>(props); consumer.subscribe(Collections.singletonList(topicName));
+            Consumer<String, String> consumer = new KafkaConsumer<>(props); consumer.subscribe(Collections.singletonList(topicName));
             try {
-                while (true) {
-                    Duration d = Duration.ofSeconds(1000000);
-                    ConsumerRecords<String, Long> records = consumer.poll(d);
-                    for (ConsumerRecord<String, Long> record : records) {
-                        System.out.println(record.key() + " => " + record.value()); 
-                    }
-                }    
+                Duration d = Duration.ofSeconds(1000000);
+                ConsumerRecords<String, String> records = consumer.poll(d);
+                for (ConsumerRecord<String, String> record : records) {
+                    System.out.println(record.key() + " => " + record.value()); 
+                }
+                System.out.println("topic:" + topicName);     
             }
             finally {
                 consumer.close();
+                
             }
+
         }
     } 
 }
