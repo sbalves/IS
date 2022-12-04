@@ -8,8 +8,19 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
 
 public class SimpleConsumer {
+
+
+    public static void getTotalTemperaturesStdWS(KStream<String, String> lines){
+        KTable<String, Long> outlines = lines.groupByKey().count();
+        
+    }
+
+
     public static void main(String[] args) throws Exception{
         //Assign topicName to string variable
         String [] topicNames = {"StandardWeather","WeatherAlert"};
@@ -31,14 +42,23 @@ public class SimpleConsumer {
         props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         
         for(String topicName : topicNames){
-            Consumer<String, String> consumer = new KafkaConsumer<>(props); consumer.subscribe(Collections.singletonList(topicName));
+            Consumer<String, String> consumer = new KafkaConsumer<>(props);
+            consumer.subscribe(Collections.singletonList(topicName));
+
+
+            StreamsBuilder builder = new StreamsBuilder(); 
+            KStream<String, String> lines = builder.stream(topicName);
+
+            getTotalTemperaturesStdWS(lines);
+
+
+            System.out.println("topic:" + topicName);
             try {
                 Duration d = Duration.ofSeconds(1000000);
                 ConsumerRecords<String, String> records = consumer.poll(d);
                 for (ConsumerRecord<String, String> record : records) {
                     System.out.println(record.key() + " => " + record.value()); 
                 }
-                System.out.println("topic:" + topicName);     
             }
             finally {
                 consumer.close();

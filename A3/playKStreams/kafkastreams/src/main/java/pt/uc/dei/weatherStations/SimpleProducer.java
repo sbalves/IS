@@ -50,9 +50,9 @@ public class SimpleProducer {
         for(String topicName : topicNames){
             Producer<String, String> producer = new KafkaProducer<>(props);
             for(int i = 0; i < 30; i++) {
-                    producer.send(generateWeatherEvent(topicName, "WS1"));
-                    producer.send(generateWeatherEvent(topicName, "WS2"));
-                    producer.send(generateWeatherEvent(topicName, "WS3"));
+                producer.send(generateWeatherEvent(topicName, "WS1"));
+                producer.send(generateWeatherEvent(topicName, "WS2"));
+                producer.send(generateWeatherEvent(topicName, "WS3"));
                 if (i % 10 == 0)
                     System.out.println("Sending message " + (i + 1) + " to topic " + topicName);
             }
