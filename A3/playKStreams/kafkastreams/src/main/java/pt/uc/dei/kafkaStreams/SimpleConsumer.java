@@ -8,22 +8,30 @@ import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Produced;
 
 public class SimpleConsumer {
 
 
-    public static void getTotalTemperaturesStdWS(KStream<String, String> lines){
+
+    public static void getTotalTemperaturesStdWS(KStream<String, String> lines, String resultTopic){
+        System.out.println("getTotalTemperaturesStdWS doing");
         KTable<String, Long> outlines = lines.groupByKey().count();
-        
+        outlines.mapValues(v -> "" + v)
+        .toStream()
+        .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+        System.out.println("getTotalTemperaturesStdWS done");
     }
 
 
     public static void main(String[] args) throws Exception{
         //Assign topicName to string variable
         String [] topicNames = {"StandardWeather","WeatherAlert"};
+        String resultsTopic = "Results";
 
         // create instance for properties to access producer configs
         Properties props = new Properties();
@@ -49,7 +57,7 @@ public class SimpleConsumer {
             StreamsBuilder builder = new StreamsBuilder(); 
             KStream<String, String> lines = builder.stream(topicName);
 
-            getTotalTemperaturesStdWS(lines);
+            getTotalTemperaturesStdWS(lines,resultsTopic);
 
 
             System.out.println("topic:" + topicName);
@@ -62,7 +70,6 @@ public class SimpleConsumer {
             }
             finally {
                 consumer.close();
-                
             }
 
         }

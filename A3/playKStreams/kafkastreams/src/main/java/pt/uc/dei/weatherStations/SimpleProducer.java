@@ -5,9 +5,8 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.github.javafaker.Faker;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.Random;
 
 public class SimpleProducer {
@@ -16,21 +15,23 @@ public class SimpleProducer {
     static Random rand = new Random();
 
     
-    public static ProducerRecord<String, String> generateWeatherEvent(String topicName, String station) {
-        ObjectNode transaction = JsonNodeFactory.instance.objectNode();
-        transaction.put("location", locations[rand.nextInt(8)]);
+    public static ProducerRecord<String, String> generateWeatherEvent(String topicName, String station) throws JSONException {
+        JSONObject jsonString = new JSONObject();
+
+        //ObjectNode transaction = JsonNodeFactory.instance.objectNode();
+        jsonString.put("location", locations[rand.nextInt(8)]);
         if(topicName == "StandardWeather")
-            transaction.put("temperature",  rand.nextInt(-10,40));
+            jsonString.put("temperature",  rand.nextInt(-10,40));
         else
-            transaction.put("type", type[rand.nextInt(2)]);
-        return new ProducerRecord<>(topicName, station, transaction.toString());
+            jsonString.put("type", type[rand.nextInt(2)]);
+        return new ProducerRecord<>(topicName, station, jsonString.toString());
     }
 
    
 
     public static void main(String[] args) throws Exception{ //Assign topicName to string variable
 
-        String [] topicNames = {"StandardWeather","WeatherAlert"};
+        String [] topicNames = {"StandardWeather1","WeatherAlert1"};
 
         // create instance for properties to access producer configs
         Properties props = new Properties(); //Assign localhost id
