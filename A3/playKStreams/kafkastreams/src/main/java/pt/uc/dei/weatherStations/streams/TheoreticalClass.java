@@ -1,8 +1,12 @@
 package pt.uc.dei.weatherStations.streams;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Properties;
+
+import javax.sound.midi.Soundbank;
+
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
@@ -13,6 +17,34 @@ import org.apache.kafka.streams.kstream.KTable;
 import org.apache.kafka.streams.kstream.Produced;
 
 public class TheoreticalClass {
+    static String fileName =  System.getProperty("user.dir") + "/results.out";
+
+    public static void writeResultsFile(String str){
+        byte[] strToBytes = str.getBytes();
+        try {
+            System.out.println("fileName:" + fileName);
+            FileOutputStream outputStream = new FileOutputStream(fileName, true);
+            outputStream.write(strToBytes);
+            outputStream.close();
+            System.out.println("print done <3");
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    public static void getTotalTemperaturesStdWS(KStream<String, String> lines, String resultTopic){
+        System.out.println("getTotalTemperaturesStdWS doing");
+        KTable<String, Long> outlines = lines.groupByKey().count();
+        outlines.mapValues(v -> {
+                                writeResultsFile("1-\t\t" + v + "\n");
+                                return ("" + v);})
+                .toStream()
+                .peek((key, value) -> System.out.println("-1- Outgoing record - key " + key + " value " + value))
+                .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+        System.out.println("getTotalTemperaturesStdWS done");
+    }
+
     public static void main(String[] args) throws InterruptedException, IOException {         
 
         String topicStandard = "StandardWeather1";
@@ -28,13 +60,8 @@ public class TheoreticalClass {
         StreamsBuilder builder = new StreamsBuilder(); 
         KStream<String, String> lines = builder.stream(topicStandard);
 
-        /* count() */
-        KTable<String, Long> outlines = lines.groupByKey().count();
-        outlines.mapValues(v -> "" + v)
-                .toStream()
-                .peek((key, value) -> System.out.println("-1- Outgoind record - key " + key + " value " + value))
-                .to(outtopicname, Produced.with(Serdes.String(), Serdes.String()));
-
+        /* 1. Count	temperature	readings	of	standard	weather	events	per	weather	station */
+        getTotalTemperaturesStdWS(lines, outtopicname);
 
         /* reduce() 
         lines

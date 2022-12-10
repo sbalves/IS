@@ -20,6 +20,7 @@ public class SimpleProducer {
 
         //ObjectNode transaction = JsonNodeFactory.instance.objectNode();
         jsonString.put("location", locations[rand.nextInt(8)]);
+        jsonString.put("Weather Station", station);
         if(topicName == "StandardWeather")
             jsonString.put("temperature",  rand.nextInt(-10,40));
         else
