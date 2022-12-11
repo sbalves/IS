@@ -34,15 +34,16 @@ public class TheoreticalClass {
         /* count() */
         System.out.println("getTotalTemperaturesStdWS doing");
 
+ 
         KTable<String, Long> outlines = lines.groupByKey().count();
-        outlines.mapValues(v -> "" + v)
+        outlines
                 .toStream()
-                .peek((key, value) -> System.out.println("-1- Outgoin record - key " + key + " value " + value))
-                .to(outtopicname, Produced.with(Serdes.String(), Serdes.String()));
+                .peek((key, value) -> System.out.println("Key: " + key + " value: " + value));
+                
         System.out.println("getTotalTemperaturesStdWS done");
+ /*
 
-
-        /* reduce() */
+        reduce() */
         /*        lines
             .groupByKey()
             .reduce((a, b) -> a + b)

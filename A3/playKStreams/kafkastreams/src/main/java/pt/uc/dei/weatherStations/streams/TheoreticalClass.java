@@ -12,9 +12,18 @@ import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.apache.kafka.streams.kstream.Grouped;
+import org.apache.kafka.streams.kstream.KGroupedStream;
 import org.apache.kafka.streams.kstream.KStream;
 import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.apache.kafka.streams.kstream.Produced;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 public class TheoreticalClass {
     static String fileName =  System.getProperty("user.dir") + "/results.out";
@@ -33,22 +42,85 @@ public class TheoreticalClass {
         }
     }
 
+    public static String getParameter(String str, String par) throws JSONException{
+        JSONObject strJson = new JSONObject(str);
+        return (String) strJson.get(par);
+    }
+
+    /* 1. Count	temperature	readings	of	standard	weather	events	per	weather	station */
     public static void getTotalTemperaturesStdWS(KStream<String, String> lines, String resultTopic){
-        System.out.println("getTotalTemperaturesStdWS doing");
+        writeResultsFile("1. Count	temperature	readings	of	standard	weather	events	per	weather	station\n");
         KTable<String, Long> outlines = lines.groupByKey().count();
-        outlines.mapValues(v -> {
-                                writeResultsFile("1-\t\t" + v + "\n");
+        outlines.mapValues((k,v) -> {
+                                writeResultsFile("Weather Station: " + k + "\t\tNo. temperature readings: " + v + "\n");
                                 return ("" + v);})
                 .toStream()
-                .peek((key, value) -> System.out.println("-1- Outgoing record - key " + key + " value " + value))
+                .peek((key, value) -> System.out.println("Weather Station: " + key + " No. temperature readings: " + value))
                 .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
-        System.out.println("getTotalTemperaturesStdWS done");
     }
+
+    /* 2. Count	temperature	readings	of	standard	weather	events	per	location */
+    public static void getTotalTemperaturesStdLocation(KStream<String, String> lines, String resultTopic){
+        writeResultsFile("2. Count	temperature	readings	of	standard	weather	events	per	weather	location\n");
+
+                KTable outlines = lines.map((k,v) -> {
+                                                try {
+                                                    return new KeyValue(getParameter(resultTopic, "location"), v);
+                                                } catch (JSONException e) {
+                                                    // TODO Auto-generated catch block
+                                                    e.printStackTrace();
+                                                }
+                                                return null;
+                                           })
+                                        .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))    
+                                        .count();
+
+
+                outlines.mapValues((k,v) -> {
+                                        writeResultsFile("Location: " + k + "\t\tNo. temperature readings: " + v + "\n");
+                                        return ("" + v);})
+                        .toStream()
+                        .peek((key, value) -> System.out.println("Location: " + key + " No. temperature readings: " + value))
+                        .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+    }
+
+    public static void getMinTemperature(){};
+
+    /* 3. Get	minimum	and	maximum	temperature	per	weather	station. */
+    public static void getMinMaxPerWS(KStream<String, String> lines, String resultTopic){
+        writeResultsFile("3. Get	minimum	and	maximum	temperature	per	weather	station.\n");
+        KStream<String, Integer> outlines = lines.groupByKey()
+                                .aggregate( () -> 0 , 
+                                (key, value, min) -> {
+                                    try {
+                                        System.out.println("wtf is the value: " + value);
+                                        if(Integer.valueOf(getParameter(value, "temperature")) < min){
+                                            min = Integer.valueOf(getParameter(value, "temperature"));
+                                            return min;}
+                                    } catch (NumberFormatException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    } catch (JSONException e) {
+                                        // TODO Auto-generated catch block
+                                        e.printStackTrace();
+                                    }
+                                    return min;
+                                },
+                                Materialized.with(Serdes.String(), Serdes.Integer()))
+                                .toStream()
+                                .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " + v))
+                                ;
+
+           
+    }
+
+
+
 
     public static void main(String[] args) throws InterruptedException, IOException {         
 
         String topicStandard = "StandardWeather1";
-        String topicAlert = "WeatherAlert1";
+        //String topicAlert = "WeatherAlert1";
         String outtopicname = "results";
 
         java.util.Properties props = new Properties();
@@ -58,11 +130,13 @@ public class TheoreticalClass {
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         
         StreamsBuilder builder = new StreamsBuilder(); 
-        KStream<String, String> lines = builder.stream(topicStandard);
+        KStream<String, String> linesStd = builder.stream(topicStandard);
+        //KStream<String, String> linesAlert = builder.stream(topicAlert);
 
-        /* 1. Count	temperature	readings	of	standard	weather	events	per	weather	station */
-        getTotalTemperaturesStdWS(lines, outtopicname);
-
+       // lines.peek((k,v)-> System.out.println(v));
+       //getTotalTemperaturesStdWS(lines, outtopicname);
+       //getTotalTemperaturesStdLocation(lines, outtopicname);
+       getMinMaxPerWS(linesStd, outtopicname);
         /* reduce() 
         lines
             .groupByKey()

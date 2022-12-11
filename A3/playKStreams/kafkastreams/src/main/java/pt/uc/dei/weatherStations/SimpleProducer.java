@@ -7,6 +7,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.Random;
 
 public class SimpleProducer {
@@ -16,16 +17,15 @@ public class SimpleProducer {
 
     
     public static ProducerRecord<String, String> generateWeatherEvent(String topicName, String station) throws JSONException {
-        JSONObject jsonString = new JSONObject();
+        JSONObject jsonRecord = new JSONObject();
 
-        //ObjectNode transaction = JsonNodeFactory.instance.objectNode();
-        jsonString.put("location", locations[rand.nextInt(8)]);
-        jsonString.put("Weather Station", station);
+        jsonRecord.put("location", locations[rand.nextInt(8)]);
+        jsonRecord.put("Weather Station", station);
         if(topicName == "StandardWeather")
-            jsonString.put("temperature",  rand.nextInt(-10,40));
+            jsonRecord.put("temperature",  rand.nextInt(0,40));
         else
-            jsonString.put("type", type[rand.nextInt(2)]);
-        return new ProducerRecord<>(topicName, station, jsonString.toString());
+            jsonRecord.put("type", type[rand.nextInt(2)]);
+        return new ProducerRecord<>(topicName, station, jsonRecord.toString());
     }
 
    
