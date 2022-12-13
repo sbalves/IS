@@ -32,7 +32,7 @@ public class SimpleProducer {
 
     public static void main(String[] args) throws Exception{ //Assign topicName to string variable
 
-        String [] topicNames = {"StandardWeather1"}; //,"WeatherAlert1"}
+        String [] topicNames = {"StandardWeather1","WeatherAlert1"};
 
         // create instance for properties to access producer configs
         Properties props = new Properties(); //Assign localhost id
