@@ -44,7 +44,7 @@ public class TheoreticalClass {
 
     public static String getParameter(String str, String par) throws JSONException{
         JSONObject strJson = new JSONObject(str);
-        return (String) strJson.get(par);
+        return strJson.getString(par);
     }
 
     /* 1. Count	temperature	readings	of	standard	weather	events	per	weather	station */
@@ -84,38 +84,135 @@ public class TheoreticalClass {
                         .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
     }
 
-    public static void getMinTemperature(){};
+    public static int getMinTemperature(int v1, int v2){
+        if(v1 < v2)
+            return v1;
+        return v2;
+    }
+
+    public static int getMaxTemperature(int v1, int v2){
+        if(v1 > v2)
+            return v1;
+        return v2;
+    }
 
     /* 3. Get	minimum	and	maximum	temperature	per	weather	station. */
     public static void getMinMaxPerWS(KStream<String, String> lines, String resultTopic){
         writeResultsFile("3. Get	minimum	and	maximum	temperature	per	weather	station.\n");
-        KStream<String, Integer> outlines = lines.groupByKey()
-                                .aggregate( () -> 0 , 
-                                (key, value, min) -> {
-                                    try {
-                                        System.out.println("wtf is the value: " + value);
-                                        if(Integer.valueOf(getParameter(value, "temperature")) < min){
-                                            min = Integer.valueOf(getParameter(value, "temperature"));
-                                            return min;}
-                                    } catch (NumberFormatException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    } catch (JSONException e) {
-                                        // TODO Auto-generated catch block
-                                        e.printStackTrace();
-                                    }
-                                    return min;
-                                },
-                                Materialized.with(Serdes.String(), Serdes.Integer()))
-                                .toStream()
-                                .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " + v))
-                                ;
+        lines.map((k,v) -> {
+            try {
+                return new KeyValue<>(k, Integer.valueOf(getParameter(v, "temperature")));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+            })
+            .groupByKey(Grouped.with(Serdes.String(), Serdes.Integer()))  
+            .reduce((v1, v2) ->  getMinTemperature(v1,v2))
+            .toStream()
+            .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " + v))
+            .to(resultTopic, Produced.with(Serdes.String(), Serdes.Integer()));
 
-           
+        lines.map((k,v) -> {
+                try {
+                    return new KeyValue<>(k, Integer.valueOf(getParameter(v, "temperature")));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return null;
+            })
+                .groupByKey(Grouped.with(Serdes.String(), Serdes.Integer()))  
+                .reduce((v1, v2) -> {
+                    v2 = getMaxTemperature(v1,v2);
+                    return v2;})
+                .toStream()
+                .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMax temperature: " + v))
+                .to(resultTopic, Produced.with(Serdes.String(), Serdes.Integer()));
+
+                /* */
     }
 
+    
+    /* 4. Get	minimum	and	maximum	temperature	per	weather	location.
+    public static void getMinMaxPerLocation(KStream<String, String> lines, String resultTopic){
+        writeResultsFile("4. Get	minimum	and	maximum	temperature	per	location.\n");
+
+        lines
+            .map((k,v) -> {
+                                                try {
+                                                    return new KeyValue(getParameter(resultTopic, "location"), v);
+                                                } catch (JSONException e) {
+                                                    // TODO Auto-generated catch block
+                                                    e.printStackTrace();
+                                                }
+                                                return null;
+                                           })
+            .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+            .reduce((v1, v2) -> getMinTemperature(v1,v2))
+            .toStream()
+            .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " + getParameter(v,"temperature")))
+            .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+
+        lines
+            .map((k,v) -> {
+                try {
+                    return new KeyValue(getParameter(resultTopic, "location"), v);
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return null;
+        })
+        .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))
+        .reduce((v1, v2) -> getMaxTemperature(v1,v2))
+        .toStream()
+        .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMax temperature: " + getParameter(v,"temperature")))
+        .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+        
+    }
+ */
+    /* 6. Count	the	total	alerts	per	type */
+    public static void getTotalAlertsType(KStream<String, String> lines, String resultTopic){
+        writeResultsFile("6. Count	the	total	alerts	per	type \n");
+
+        KTable outlines = lines.map((k,v) -> {
+                                        try {
+                                            return new KeyValue(getParameter(resultTopic, "type"), v);
+                                        } catch (JSONException e) {
+                                            // TODO Auto-generated catch block
+                                            e.printStackTrace();
+                                        }
+                                        return null;
+                                    })
+                                .groupByKey(Grouped.with(Serdes.String(), Serdes.String()))    
+                                .count();
 
 
+        outlines.mapValues((k,v) -> {
+                                writeResultsFile("Type: " + k + "\t\tNo. alerts: " + v + "\n");
+                                return ("" + v);})
+                .toStream()
+                .peek((key, value) -> System.out.println("Type: " + key + " No. alerts: " + value))
+                .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+    }
+
+    /* 7. Get	minimum	temperature of	weather	stations	with	red	alert	events 
+    public static void getMinTempRedAlert(KStream<String, String> lines, String resultTopic){
+        writeResultsFile("7. Get	minimum	temperature of	weather	stations	with	red	alert	events \n");
+        
+        lines
+            .groupByKey()
+            .filter((k,v) -> getParameter(v,"type") == "red")
+            .reduce((v1, v2) -> getMinTemperature(v1,v2))
+            .toStream()
+            .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " +  getParameter(v,"temperature")))
+            .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+    }
+   */
 
     public static void main(String[] args) throws InterruptedException, IOException {         
 
@@ -124,7 +221,7 @@ public class TheoreticalClass {
         String outtopicname = "results";
 
         java.util.Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "theoretical-class2");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "theoretical-class7");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());

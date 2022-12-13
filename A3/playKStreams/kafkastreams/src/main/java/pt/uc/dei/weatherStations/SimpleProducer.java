@@ -21,8 +21,8 @@ public class SimpleProducer {
 
         jsonRecord.put("location", locations[rand.nextInt(8)]);
         jsonRecord.put("Weather Station", station);
-        if(topicName == "StandardWeather")
-            jsonRecord.put("temperature",  rand.nextInt(0,40));
+        if(topicName == "StandardWeather1")
+            jsonRecord.put("temperature",  rand.nextInt(-5,40));
         else
             jsonRecord.put("type", type[rand.nextInt(2)]);
         return new ProducerRecord<>(topicName, station, jsonRecord.toString());
@@ -32,7 +32,7 @@ public class SimpleProducer {
 
     public static void main(String[] args) throws Exception{ //Assign topicName to string variable
 
-        String [] topicNames = {"StandardWeather1","WeatherAlert1"};
+        String [] topicNames = {"StandardWeather1"}; //,"WeatherAlert1"}
 
         // create instance for properties to access producer configs
         Properties props = new Properties(); //Assign localhost id

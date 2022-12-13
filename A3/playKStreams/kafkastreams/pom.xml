@@ -95,13 +95,7 @@
   
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
   
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.10.0.pr1</version>
-  
-
-    </dependency>
+   
         <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
