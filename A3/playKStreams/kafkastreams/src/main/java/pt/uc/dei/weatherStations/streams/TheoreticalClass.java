@@ -2,11 +2,13 @@ package pt.uc.dei.weatherStations.streams;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream.GetField;
 import java.time.Duration;
 import java.util.Properties;
 
 import javax.sound.midi.Soundbank;
 
+import org.apache.kafka.common.config.ConfigDef.ValidList;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
 import org.apache.kafka.streams.KeyValue;
@@ -200,19 +202,73 @@ public class TheoreticalClass {
             .to(resultTopic);
     }
 
-    /* 7. Get	minimum	temperature of	weather	stations	with	red	alert	events 
-    public static void getMinTempRedAlert(KStream<String, String> lines, String resultTopic){
+    /* 7. Get	minimum	temperature of	weather	stations	with	red	alert	events  */
+    public static void getMinTempRedAlert(KStream<String, String> linesAlerts, KStream<String, String> linesStd, String resultTopic){
         writeResultsFile("7. Get	minimum	temperature of	weather	stations	with	red	alert	events \n");
         
-        lines
-            .groupByKey()
-            .filter((k,v) -> getParameter(v,"type") == "red")
-            .reduce((v1, v2) -> getMinTemperature(v1,v2))
-            .toStream()
-            .peek((k,v) -> System.out.println("Weather station: " + k + "\t\t\tMin temperature: " +  getParameter(v,"temperature")))
-            .to(resultTopic, Produced.with(Serdes.String(), Serdes.String()));
+        KStream<String, String> redAlerts  = linesAlerts
+            .filter((k,v) -> {
+                try {
+                    return getParameter(v,"type") == "red";
+                } catch (JSONException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return false;
+            });
+     
+            KStream<String, Integer> temperatures = linesStd.map((k,v) -> {
+                try {
+                    return new KeyValue<>(k, Integer.valueOf(getParameter(v, "temperature")));
+                } catch (NumberFormatException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                return null;
+                });
+        
     }
-   */
+    
+    /* 8. Get maximum temperature of each location of alert events for the last hour
+    (students are allowed to define a different value for the time window)  */
+    public static void getMaxTempAlertHour(KStream<String, String> linesAlerts, KStream<String, String> linesStd, String resultTopic){}
+    
+    /* 9. Get minimum temperature per weather station in red alert zones */
+    public static void getMinTempRedZones(KStream<String, String> linesAlerts, KStream<String, String> linesStd, String resultTopic){}
+    
+    /* 10. Get the average temperature per weather station */
+    public static void getAvgTempPerWS( KStream<String, String> lines, String resultTopic){
+
+        lines.map((k,v) -> {
+            try {
+                System.out.println(v);
+                return new KeyValue<>(k, Integer.valueOf(getParameter(v, "temperature")));
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            return null;
+            })
+            .groupByKey(Grouped.with(Serdes.String(), Serdes.Integer()))
+            .aggregate(() -> new int[]{0, 0}, (aggKey, newValue, aggValue) -> {
+                aggValue[0] += 1;
+                aggValue[1] += newValue;
+
+                return aggValue;
+            }, Materialized.with(Serdes.String(), new IntArraySerde()))
+            .mapValues(v -> v[0] != 0 ? "" + (1.0 * v[1]) / v[0] : "div by 0")
+            .toStream()
+            .peek((k, v) -> System.out.println("Weather Station: " + k + " Average temperature: " + v))
+            .to(resultTopic + "-10", Produced.with(Serdes.String(), Serdes.String()));
+
+    }
+    
+    /* 11. Get the average temperature of weather stations with red alert events for the last hour
+    (students are allowed to define a different value for the time window)  */
+    public static void getAvgTempRedZonesLastHour(KStream<String, String> linesAlerts, KStream<String, String> linesStd, String resultTopic){}
+
 
     public static void main(String[] args) throws InterruptedException, IOException {         
 
@@ -221,7 +277,7 @@ public class TheoreticalClass {
         String outtopicname = "results";
 
         java.util.Properties props = new Properties();
-        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "theoretical-class12");
+        props.put(StreamsConfig.APPLICATION_ID_CONFIG, "theoretical-class13");
         props.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "broker1:9092");
         props.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
         props.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, Serdes.String().getClass());
@@ -236,7 +292,8 @@ public class TheoreticalClass {
        //getMinMaxPerWS(linesStd, outtopicname);
        //getMinMaxPerLocation(linesStd, outtopicname);
        //getTotalTemperaturesStdWS(linesAlert, outtopicname,2);
-       getTotalAlertsType(linesAlert, outtopicname);
+       //getTotalAlertsType(linesAlert, outtopicname);
+       getAvgTempPerWS(linesStd, outtopicname);
 
         /* reduce() 
         lines
